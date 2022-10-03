@@ -1,0 +1,9 @@
+---
+serviceAccount:
+  create: true
+  name: argocd-secrets
+  annotations:
+    # TODO: template
+    iam.gke.io/gcp-service-account: argocd@GCP_PROJECT_ID.iam.gserviceaccount.com
+gcr:
+  registry: gcr.io

@@ -1,0 +1,39 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: walker
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-20"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: walker
+  sourceRepos:
+  - '*'
+  destinations:
+  - namespace: '*'
+    server: '*'
+  clusterResourceBlacklist:
+  - group: gcp.projectx.mavenwave.dev/v1alpha1
+    kind: '*'
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  roles:
+  - name: admin
+    policies:
+    - p, proj:walker:admin, applications, *, walker/*, allow
+    groups:
+    - MavenWave-DevOps:projectx
+  - name: read-only
+    description: Read-only privileges to walker
+    policies:
+    - p, proj:walker:read-only, applications, get, walker/*, allow
+    groups: []
+  - name: ci-role
+    description: Sync privileges for walker tenant
+    policies:
+    - p, proj:walker:ci-role, applications, sync, walker/*, allow
+    groups: []

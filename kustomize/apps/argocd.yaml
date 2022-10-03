@@ -1,0 +1,79 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: argocd
+  labels:
+    deployment: kustomize
+  annotations:
+    argocd.argoproj.io/sync-wave: "-100"
+spec:
+  generators:
+  - git:
+      # TODO: template
+      repoURL: https://github.com/MavenWave-DevOps/REPO_NAME.git
+      revision: HEAD
+      files:
+      - path: kustomize/argocd/manifests/*/config.yaml
+  template:
+    metadata:
+      name: 'argocd-{{ path.basename }}'
+      labels:
+        name: 'argocd-{{ path.basename }}'
+        tier: cluster
+      annotations:
+        argocd.argoproj.io/sync-wave: "{{ app.syncWave }}"
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: cluster-addons
+      source:
+        path: '{{ path }}/manifest'
+        # TODO: template
+        repoURL: https://github.com/MavenWave-DevOps/REPO_NAME.git
+        targetRevision: HEAD
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{ app.namespace }}'
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: argocd-charts
+  labels:
+    deployment: helm
+  annotations:
+    argocd.argoproj.io/sync-wave: "-100"
+spec:
+  generators:
+  - git:
+      # TODO: template
+      repoURL: https://github.com/MavenWave-DevOps/REPO_NAME.git
+      revision: HEAD
+      files:
+      - path: kustomize/argocd/charts/*/config.yaml
+  template:
+    metadata:
+      name: 'argocd-{{ path.basename }}'
+      labels:
+        name: 'argocd-{{ path.basename }}'
+        tier: cluster
+      annotations:
+        argocd.argoproj.io/sync-wave: "{{ app.syncWave }}"
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: cluster-addons
+      source:
+        path: '{{ path }}/chart'
+        # TODO: template
+        repoURL: https://github.com/MavenWave-DevOps/REPO_NAME.git
+        targetRevision: HEAD
+        helm:
+          releaseName: '{{ path.basename }}'
+          ignoreMissingValueFiles: true
+          valueFiles:
+          - env/values.yaml
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{ app.namespace }}'

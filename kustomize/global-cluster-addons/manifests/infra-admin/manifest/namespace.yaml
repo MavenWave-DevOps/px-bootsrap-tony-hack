@@ -1,0 +1,13 @@
+apiVersion: core.cnrm.cloud.google.com/v1beta1
+kind: ConfigConnector
+metadata:
+  name: configconnector.core.cnrm.cloud.google.com
+spec:
+  mode: namespaced
+
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: infra-admin

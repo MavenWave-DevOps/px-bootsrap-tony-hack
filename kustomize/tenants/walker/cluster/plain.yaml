@@ -1,0 +1,115 @@
+---
+apiVersion: compute.gcp.crossplane.io/v1beta1
+kind: Network
+metadata:
+  name: plain-vpc
+spec:
+  providerConfigRef:
+    name: walker
+
+  forProvider:
+    autoCreateSubnetworks: false
+    routingConfig:
+      routingMode: GLOBAL
+
+  writeConnectionSecretToRef:
+    name: plain-vpc-ref
+    namespace: walker
+---
+
+apiVersion: compute.gcp.crossplane.io/v1beta1
+kind: Subnetwork
+metadata:
+  name: plain-subnet
+spec:
+  providerConfigRef:
+    name: walker
+
+  forProvider:
+    networkRef:
+      name: plain-vpc
+
+    region: us-central1
+    ipCidrRange: 192.168.0.0/24
+    privateIpGoogleAccess: true
+    secondaryIpRanges:
+      - rangeName: pods
+        ipCidrRange: 10.0.0.0/8
+      - rangeName: services
+        ipCidrRange: 172.16.0.0/16
+
+  writeConnectionSecretToRef:
+    name: plain-subnet-ref
+    namespace: walker
+
+---
+
+apiVersion: container.gcp.crossplane.io/v1beta2
+kind: Cluster
+metadata:
+  name: plain-cluster
+spec:
+  forProvider:
+    networkRef:
+      name: plain-vpc
+    subnetworkRef: 
+      name: plain-subnet
+
+    location: us-central1-a
+    initialClusterVersion: "1.21.5"
+    networkConfig:
+      datapathProvider: ADVANCED_DATAPATH
+      enableIntraNodeVisibility: false
+    ipAllocationPolicy:
+      useIpAliases: true
+    defaultMaxPodsConstraint:
+      maxPodsPerNode: 110
+    binaryAuthorization: 
+      enabled: false
+    legacyAbac:
+      enabled: false
+    loggingService: "none"
+    masterAuth:
+      clientCertificateConfig:
+        issueClientCertificate: false
+    monitoringService: "none"
+
+  writeConnectionSecretToRef:
+    name: plain-cluster-ref
+    namespace: walker
+
+---
+
+apiVersion: container.gcp.crossplane.io/v1beta1
+kind: NodePool
+metadata:
+  name: plain-node-pool
+spec:
+  forProvider:
+    autoscaling:
+      autoprovisioned: false
+      enabled: true
+      maxNodeCount: 2
+      minNodeCount: 1  
+    clusterRef:
+      name: plain-cluster
+    config:
+      diskSizeGb: 50
+      diskType: pd-ssd
+      imageType: cos_containerd
+      labels:
+        test-label: crossplane-created
+      machineType: e2-small
+      oauthScopes:
+        - "https://www.googleapis.com/auth/devstorage.read_only"
+        - "https://www.googleapis.com/auth/logging.write"
+        - "https://www.googleapis.com/auth/monitoring"
+        - "https://www.googleapis.com/auth/servicecontrol"
+        - "https://www.googleapis.com/auth/service.management.readonly"
+        - "https://www.googleapis.com/auth/trace.append"
+    initialNodeCount: 1
+    locations:
+      - us-central1-a
+    management:
+      autoRepair: true
+      autoUpgrade: true

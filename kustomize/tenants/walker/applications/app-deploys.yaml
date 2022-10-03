@@ -1,0 +1,64 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: walker-app-deploys
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+  labels:
+    tier: platform
+    deployment: kustomize
+spec:
+  generators:
+  - git:
+      # TODO: template
+      repoURL: https://github.com/MavenWave-DevOps/REPO_NAME.git
+      revision: HEAD
+      files:
+      - path: kustomize/tenants/walker/app-deploys/*/*app-config.yaml
+  template:
+    metadata:
+      name: '{{ app.lifecycle }}-{{ path.basename }}-deploy'
+      annotations:
+        argocd-image-updater.argoproj.io/image-list: "{{ app.imageList }}"
+        argocd-image-updater.argoproj.io/write-back-method: argocd
+
+        argocd-image-updater.argoproj.io/pull-secret: pullsecret:argocd/gcr-credentials 
+        argocd-image-updater.argoproj.io/force-update: "true"
+        argocd-image-updater.argoproj.io/update-strategy: latest
+
+        argocd.argoproj.io/sync-wave: '{{ app.syncWave }}'
+      finalizers:
+      - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: walker
+      source:
+        # TODO: template
+        repoURL: https://github.com/MavenWave-DevOps/REPO_NAME.git
+        path: '{{ path }}/chart'
+        targetRevision: HEAD
+        helm:
+          releaseName: '{{ app.lifecycle }}-{{ path.basename }}'
+          ignoreMissingValueFiles: true
+          values: |
+            walker-web-app:
+              github_org: MavenWave-DevOps
+              db_project_id: GCP_PROJECT_ID
+              app_project_id: GCP_PROJECT_ID
+              app_sa: TENANT_CODE-admin@GCP_PROJECT_ID.iam.gserviceaccount.com
+              lifecycle: {{ app.lifecycle }}
+              domain: {{ app.domain }}
+              repo_name: {{ app.repoName }}
+              frontend:
+                enabled: {{ app.frontend.enabled }}
+              backend:
+                enabled: {{ app.backend.enabled }}
+          valueFiles:
+          - ./lifecycles/{{ app.lifecycle }}.yaml
+      destination:
+        server: '{{ app.server }}'
+        namespace: '{{ app.lifecycle }}-{{ path.basename }}'
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
+

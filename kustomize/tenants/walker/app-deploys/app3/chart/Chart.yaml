@@ -1,0 +1,7 @@
+apiVersion: v2
+name: web-app
+version: 0.0.1
+dependencies:
+  - name: walker-web-app
+    version: 0.0.38
+    repository: https://mavenwave-devops.github.io/mw-charts

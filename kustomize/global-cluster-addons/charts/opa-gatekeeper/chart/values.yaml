@@ -1,0 +1,16 @@
+---
+namespace:
+  labels: {}
+
+gatekeeper:
+  controllerManager:
+    exemptNamespaces:
+      - backstage
+      - cnrm-system
+      - configconnector-operator-system
+      - gatekeeper-system
+      - kube-node-lease
+      - kube-public
+      - kube-system
+
+

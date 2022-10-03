@@ -1,0 +1,19 @@
+---
+apiVersion: platform.projectx.mavenwave.dev/v1alpha1
+kind: ClusterClaim
+metadata:
+  name: dev-cluster
+spec:
+  compositionSelector:
+    matchLabels:
+      provider: gcp
+      class: standard
+  writeConnectionSecretToRef:
+    name: walker-dev
+  parameters:
+    google:
+      project:
+        id: GCP_PROJECT_ID
+        number: "70415670993"
+    identity:
+      source: InjectedIdentity

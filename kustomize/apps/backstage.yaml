@@ -1,0 +1,31 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backstage
+  annotations:
+    argocd.argoproj.io/sync-wave: "-30"
+    argocd-image-updater.argoproj.io/image-list: backend=gcr.io/GCP_PROJECT_ID/backstage-images/backend
+    argocd-image-updater.argoproj.io/write-back-method: argocd
+
+    # argocd-image-updater.argoproj.io/pull-secret: pullsecret:argocd/gcr-credentials 
+    # argocd-image-updater.argoproj.io/force-update: "true"
+    # argocd-image-updater.argoproj.io/update-strategy: latest
+    argocd-image-updater.argoproj.io/backend.pull-secret: pullsecret:argocd/gcr-credentials 
+    argocd-image-updater.argoproj.io/backend.force-update: "true"
+    argocd-image-updater.argoproj.io/backend.update-strategy: latest
+
+  labels:
+    tier: platform
+    deployment: kustomize
+spec:
+  project: cluster-addons
+  source:
+    # TODO: template
+    repoURL: https://github.com/MavenWave-DevOps/REPO_NAME.git
+    targetRevision: HEAD
+    path: kustomize/global-cluster-addons/charts/backstage/chart
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: backstage
+

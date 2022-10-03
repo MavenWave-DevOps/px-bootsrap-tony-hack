@@ -1,0 +1,6 @@
+dependencies:
+- name: crossplane
+  repository: https://charts.crossplane.io/stable
+  version: 1.8.1
+digest: sha256:8092125c886aedd681db9982e190ba2baa0baeb8c173040e3e5c2f9cca77cfb6
+generated: "2022-06-28T17:08:22.441487-05:00"

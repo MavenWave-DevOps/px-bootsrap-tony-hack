@@ -1,0 +1,26 @@
+---
+namespace:
+  labels: {}
+
+external-dns:
+  serviceAccount:
+    annotations:
+      iam.gke.io/gcp-service-account: external-dns@GCP_PROJECT_ID.iam.gserviceaccount.com
+
+  provider: google
+  policy: sync
+  extraArgs:
+  - --google-project=px-dns-project-arf
+  - --txt-owner-id=REPO_NAME
+
+  securityContext:
+    allowPrivilegeEscalation: false
+
+  resources:
+    requests:
+      cpu: ".01"
+      memory: 32Mi
+    limits:
+      cpu: ".05"
+      memory: 64Mi
+

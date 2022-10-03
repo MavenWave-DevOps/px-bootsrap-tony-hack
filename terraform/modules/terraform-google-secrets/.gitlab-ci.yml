@@ -1,0 +1,6 @@
+default:
+  tags:
+    - terraform-modules
+include:
+  - project: 'shared-pipelines/terraform-gitlab-pipelines'
+    file: '.gitlab-ci-terraform-modules.yml'

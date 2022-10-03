@@ -1,0 +1,26 @@
+---
+apiVersion: platform.projectx.mavenwave.dev/v1alpha1
+kind: ControlPlaneClaim
+metadata:
+  name: demo
+spec:
+  compositionSelector:
+    matchLabels:
+      provider: gcp
+  writeConnectionSecretToRef:
+    name: walker-demo
+  parameters:
+    platform:
+      version: latest
+    google:
+      project:
+        id: GCP_PROJECT_ID
+        number: "70415670993"
+      crossplaneServiceAccountEmail: TENANT_CODE-admin@GCP_PROJECT_ID.iam.gserviceaccount.com
+    nodeCidr: 10.0.0.0/24
+    podCidr: 10.1.0.0/16
+    serviceCidr: 10.2.0.0/20
+    identity:
+      source: InjectedIdentity
+     
+

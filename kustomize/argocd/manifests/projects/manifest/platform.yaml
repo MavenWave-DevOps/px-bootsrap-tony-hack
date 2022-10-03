@@ -1,0 +1,37 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "-100"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  clusterResourceWhitelist:
+  - group: "*"
+    kind: '*'
+  description: Platform Project
+  sourceRepos:
+  # TODO: template
+  - 'https://github.com/MavenWave-DevOps/REPO_NAME.git'
+  destinations:
+  - namespace: '*'
+    server: '*'
+  roles:
+  - name: admin
+    policies:
+    - p, proj:platform:admin, applications, *, platform/*, allow
+    groups:
+    # TODO: template
+    - MavenWave-DevOps:projectx
+  - name: read-only
+    description: Read-only privileges to platform
+    policies:
+    - p, proj:platform:read-only, applications, get, platform/*, allow
+    groups: []
+  - name: ci-role
+    description: Sync privileges for guestbook-dev
+    policies:
+    - p, proj:platform:ci-role, applications, sync, platform/*, allow
+    groups: []

@@ -1,0 +1,3 @@
+app:
+  syncWave: "-80"
+  namespace: infra-admin

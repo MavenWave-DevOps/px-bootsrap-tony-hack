@@ -1,0 +1,16 @@
+---
+namespace:
+  labels: {}
+
+backstage:
+  github_org: MavenWave-DevOps
+  repo_name: backstage
+  domain: backstage-TENANT_CODE.px.igniteme.dev
+  google:
+    iap: true
+  gcp_project_id: GCP_PROJECT_ID
+  gke_project_id: GCP_PROJECT_ID
+  dns_project_id: px-dns-project-arf
+  app_sa: backstage-app@GCP_PROJECT_ID.iam.gserviceaccount.com
+  secrets_sa: backstage-secrets@GCP_PROJECT_ID.iam.gserviceaccount.com
+

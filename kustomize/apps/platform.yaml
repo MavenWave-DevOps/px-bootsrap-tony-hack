@@ -1,0 +1,20 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+  labels:
+    tier: platform
+    deployment: kustomize
+spec:
+  project: platform
+  source:
+    # TODO: template
+    repoURL: https://github.com/MavenWave-DevOps/REPO_NAME.git
+    targetRevision: HEAD
+    path: kustomize/platform
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd

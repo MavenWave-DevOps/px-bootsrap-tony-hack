@@ -1,0 +1,19 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: walker-providers
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+  labels:
+    tier: platform
+    deployment: kustomize
+spec:
+  project: platform
+  source:
+    repoURL: https://github.com/MavenWave-DevOps/REPO_NAME.git
+    targetRevision: HEAD
+    path: kustomize/tenants/walker/providers
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: crossplane-system

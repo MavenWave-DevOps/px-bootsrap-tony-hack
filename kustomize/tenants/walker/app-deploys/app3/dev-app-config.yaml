@@ -1,0 +1,13 @@
+app:
+  syncWave: "-20"
+  server: https://kubernetes.default.svc
+
+  domain: app3.px.igniteme.dev
+  repoName: nginx-REPO_NAME
+  imageList: frontend=gcr.io/GCP_PROJECT_ID/prod-app3/frontend
+  lifecycle: dev
+
+  frontend:
+    enabled: true
+  backend:
+    enabled: false

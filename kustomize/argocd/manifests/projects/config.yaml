@@ -1,0 +1,3 @@
+app:
+  syncWave: "-100"
+  namespace: argocd

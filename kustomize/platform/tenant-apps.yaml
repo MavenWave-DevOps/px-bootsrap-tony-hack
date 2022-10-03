@@ -1,0 +1,36 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: tenant-apps
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+  labels:
+    tier: platform
+    deployment: kustomize
+spec:
+  generators:
+  - git:
+      # TODO: template
+      repoURL: https://github.com/MavenWave-DevOps/REPO_NAME.git
+      revision: HEAD
+      files:
+      - path: kustomize/tenants/*/config.yaml
+  template:
+    metadata:
+      name: '{{ path.basename }}-apps'
+      annotations:
+        argocd.argoproj.io/sync-wave: "20"
+      finalizers:
+      - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: platform
+      source:
+        # TODO: template
+        repoURL: https://github.com/MavenWave-DevOps/REPO_NAME.git
+        targetRevision: HEAD
+        path: '{{ path }}/applications'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: argocd

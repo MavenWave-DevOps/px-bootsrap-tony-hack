@@ -1,0 +1,3 @@
+app:
+  syncWave: "-50"
+  namespace: crossplane-system
